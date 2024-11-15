@@ -27,8 +27,16 @@ def initialize_database():
         db.create_all()
         if not QuizQuestion.query.first():
             questions = [
-                QuizQuestion(question_text="What is your favorite color?", option1="Red", option2="Blue", option3="Green", correct_answer="Blue"),
-                QuizQuestion(question_text="What is your favorite animal?", option1="Dog", option2="Cat", option3="Parrot", correct_answer="Dog")
+                QuizQuestion(question_text="Co oznacza skrót AI?", option1="Automated Integration", option2="Artificial Intelligence", 
+                             option3="Advanced Innovation", correct_answer="Artificial Intelligence"),
+                QuizQuestion(question_text="Gdzie można wykorzystać sztuczną inteligencję?", option1="Komputery", option2="Nauka", 
+                             option3="Gotowanie", correct_answer="Nauka"),
+                QuizQuestion(question_text="Jak nazywa się język, który wykorzystujemy, w 'rozmowie z komputerem'?", option1= "Python", 
+                             option2= "Angielski", option3 = 'Język migowy', correct_answer="Python"),
+                QuizQuestion(question_text="W jakich grach wykorzystamy AI?", option1="Gra w chowanego", option2= "W szachach i grach wideo", 
+                             option3="Kółko i krzyżyk", correct_answer="W szachach i grach wideo"),
+                QuizQuestion(question_text="Co komputer może zrobić z tekstem?", option1="Zrozumieć, przetłumaczyć lub dokończyć zadanie", 
+                             option2="Sprawdzić poprawną pisownie", option3="Obie odpowiedzi są poprawne", correct_answer="Obie odpowiedzi są poprawne")
             ]
             db.session.bulk_save_objects(questions)
             db.session.commit()
