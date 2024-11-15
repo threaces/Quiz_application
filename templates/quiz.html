@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <style>
+        body {
+            position: relative;
+            min-height: 100vh;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz</h1>
+    <form id="quizForm">
+        <h2>Question 1: What is your name?</h2>
+        <input type="text" name="username" required>
+
+        <!-- Dynamically loaded questions -->
+        <div id="questionsContainer"></div>
+
+        <br>
+        <input type="button" onclick="submitQuiz()" value="Submit Answers">
+
+        <!-- Display best score -->
+        <div id="bestScore" style="position: absolute; top: 10px; right: 10px;"></div>
+    </form>
+
+    <footer>
+        Here information about author
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchQuestions();
+            fetchBestScore();
+        });
+
+        function fetchQuestions() {
+            fetch('/get_questions')
+                .then(response => response.json())
+                .then(data => {
+                    const questionsContainer = document.getElementById("questionsContainer");
+                    data.questions.forEach((q, index) => {
+                        const questionHTML = `
+                            <h2>Question ${index + 2}: ${q.text}</h2>
+                            <input type="radio" name="question${q.id}" value="${q.options[0]}"> ${q.options[0]}<br>
+                            <input type="radio" name="question${q.id}" value="${q.options[1]}"> ${q.options[1]}<br>
+                            <input type="radio" name="question${q.id}" value="${q.options[2]}"> ${q.options[2]}<br>
+                        `;
+                        questionsContainer.innerHTML += questionHTML;
+                    });
+                });
+        }
+
+        function submitQuiz() {
+            const formData = new FormData(document.getElementById("quizForm"));
+            const data = { username: formData.get("username"), answers: {} };
+
+            formData.forEach((value, key) => {
+                if (key.startsWith("question")) {
+                    data.answers[key.replace("question", "")] = value;
+                }
+            });
+
+            fetch('/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById("bestScore").innerText = `Best Score: ${result.best_score}%`;
+                alert(`Your Score: ${result.score}%`);
+            });
+        }
+
+        function fetchBestScore() {
+            fetch('/submit')
+                .then(response => response.json())
+                .then(result => {
+                    document.getElementById("bestScore").innerText = `Best Score: ${result.best_score}%`;
+                });
+        }
+    </script>
+</body>
+</html>
